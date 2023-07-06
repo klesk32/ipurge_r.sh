@@ -90,30 +90,6 @@ esac
 
 # Actual cleanup portion of the script
 
-dry_run_function() {
-    echo "Operating on $userMailbox$i"
-    cyrus ipurge -d $daysSince -f -v "$userMailbox"
-
-    for i in $(du -h | awk -F'\t' '{ print $2 }' | awk -F. '{ print $2 }'); do
-        cyrus ipurge -d $daysSince -f -v "$userMailbox""$i"
-    done
-}
-
-non_dry_run_function() {
-    for i in $(du -h | awk -F'\t' '{ print $2 }' | awk -F. '{ print $2 }'); do
-        echo "Operating on $userMailbox$i"
-        cyrus ipurge -d $daysSince -f -n -v "$userMailbox"
-        cyrus ipurge -d $daysSince -f -n -v "$userMailbox""$i"
-    done
-}
-
-if [ "$dryRun" = true ]; then
-    dry_run_function
-else
-    non_dry_run_function
-fi
-
-
 SAVEIFS=$IFS
 IFS=$(echo -en "\n\b")
 echo "Operating on $userMailbox$i"
