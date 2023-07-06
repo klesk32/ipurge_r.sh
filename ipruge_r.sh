@@ -95,9 +95,9 @@ IFS=$(echo -en "\n\b")
 
 if [ "$dryRun" = true ];
     then
-        cyrus ipurge -d $daysSince -f -v "$userMailbox"
-    else
         cyrus ipurge -d $daysSince -f -n -v "$userMailbox"
+    else
+        cyrus ipurge -d $daysSince -f -v "$userMailbox"
     fi
 
 for i in $(du -h | awk -F'\t' '{ print $2 }' | awk -F. '{ print $2 }')
@@ -106,9 +106,9 @@ for i in $(du -h | awk -F'\t' '{ print $2 }' | awk -F. '{ print $2 }')
     echo "Operating on $userMailbox$i"
     if [ "$dryRun" = true ];
         then    
-            cyrus ipurge -d $daysSince -f -v "$userMailbox""$i"
-        else
             cyrus ipurge -d $daysSince -f -n -v "$userMailbox""$i"
+        else
+            cyrus ipurge -d $daysSince -f -v "$userMailbox""$i"
     fi
 
     done
