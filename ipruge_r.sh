@@ -92,7 +92,7 @@ esac
 
 SAVEIFS=$IFS
 IFS=$(echo -en "\n\b")
-echo "Operating on $userMailbox$i"
+
 if [ "$dryRun" = true ];
     then
         cyrus ipurge -d $daysSince -f -v "$userMailbox"
@@ -100,7 +100,6 @@ if [ "$dryRun" = true ];
         cyrus ipurge -d $daysSince -f -n -v "$userMailbox"
     fi
 
-    done
 for i in $(du -h | awk -F'\t' '{ print $2 }' | awk -F. '{ print $2 }')
     do
 
