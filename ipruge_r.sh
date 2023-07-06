@@ -45,8 +45,21 @@ echo "User Mailbox is located in $currentLocation"
 
 # Get date to purge up to from the user
 todaysSeconds=$(date +%s)
-echo "Enter date to clean up to in YYYY-MM-DD format"
-read -r startYear
+
+validDate=false
+
+while [ "$validDate" = false ]; do
+    echo "Enter date to clean up to in YYYY-MM-DD format:"
+    read -r startYear
+
+    # Check if the entered date is valid
+    if ! date -d "$startYear" >/dev/null 2>&1; then
+        echo "Invalid date format. Please enter a valid date in YYYY-MM-DD format."
+    else
+        validDate=true
+    fi
+done
+
 startDateSeconds=$(date -d "$startYear" +%s)
 daysSince=$(((todaysSeconds - startDateSeconds) / (60*60*24)))
 
