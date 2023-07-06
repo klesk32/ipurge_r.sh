@@ -102,7 +102,7 @@ if [ "$dryRun" = true ];
 
 for i in $(du -h | awk -F'\t' '{ print $2 }' | awk -F. '{ print $2 }')
     do
-
+    i=${i/^/.}
     echo "Operating on $userMailbox$i"
     if [ "$dryRun" = true ];
         then    
