@@ -27,7 +27,7 @@ if [ "$showHelp" = true ]; then
     echo "  -v    Show the version of the script"
     echo ""
     echo "Description:"
-    echo "This script is designed to help clean up user mailboxes by removing old email messages based on the specified criteria."
+    echo "This script is designed to clean up user mailboxes by removing old email messages based on the specified criteria."
     exit 0
 fi
 
