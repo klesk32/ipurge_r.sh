@@ -6,24 +6,19 @@ showHelp=false
 
 # functions
 function dryRunOnMailbox () {
-    local daysSince="$1"
-    local userMailbox="$2"
-
+    reviewFile="/tmp/$userId.dryrun"
     SAVEIFS=$IFS
     IFS=$(echo -en "\n\b")
-    cyrus ipurge -d "$daysSince" -f -n -v "$userMailbox"
+    cyrus ipurge -d "$daysSince" -f -n -v "$userMailbox" | tee "$reviewFile"
     for i in $(du -h | awk -F'\t' '{ print $2 }' | awk -F. '{ print $2 }')
         do
             i=${i/^/.}
-            cyrus ipurge -d "$daysSince" -f -n -v "$userMailbox""$i"
+            cyrus ipurge -d "$daysSince" -f -n -v "$userMailbox""$i" | tee "$reviewFile"
         done
     IFS=$SAVEIFS
 }
 
 function liveRunOnMailbox () {
-    local daysSince="$1"
-    local userMailbox="$2"
-
     SAVEIFS=$IFS
     IFS=$(echo -en "\n\b")
     cyrus ipurge -d "$daysSince" -f -v "$userMailbox"
@@ -139,12 +134,14 @@ esac
 
 if [ "$dryRun" = true ];
     then
-        dryRunOnMailbox "$daysSince" "$userMailbox"
-        read -r -p "Dry run complete, would you like to run the script live?: " liveRunChoice
+        dryRunOnMailbox
+        read -r -p "Dry run complete, hit enter to review the results"
+        less "/tmp/$userId.dryrun"
+        read -r -p "Would you like to run the script live?: " liveRunChoice
         case $liveRunChoice in
             [yY])
                 echo -e "Doing it again but live"
-                liveRunOnMailbox "$daysSince" "$userMailbox"
+                liveRunOnMailbox
                 echo -e "Live run complete";;
             [nN])
                 echo -e "Bailing out"
@@ -156,7 +153,7 @@ if [ "$dryRun" = true ];
     # For extra safety
     elif [ "$dryRun" = false ];
         then
-            liveRunOnMailbox "$daysSince" "$userMailbox"
+            liveRunOnMailbox
             echo "Live run complete"
     else
         echo -e "Something went horribly wrong, bailing out"
