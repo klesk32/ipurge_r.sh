@@ -9,11 +9,11 @@ function dryRunOnMailbox () {
     reviewFile="/tmp/$userId.dryrun"
     SAVEIFS=$IFS
     IFS=$(echo -en "\n\b")
-    cyrus ipurge -d "$daysSince" -f -n -v "$userMailbox" | tee "$reviewFile"
+    cyrus ipurge -d "$daysSince" -f -n -v "$userMailbox" | tee -a "$reviewFile"
     for i in $(du -h | awk -F'\t' '{ print $2 }' | awk -F. '{ print $2 }')
         do
             i=${i/^/.}
-            cyrus ipurge -d "$daysSince" -f -n -v "$userMailbox""$i" | tee "$reviewFile"
+            cyrus ipurge -d "$daysSince" -f -n -v "$userMailbox""$i" | tee -a "$reviewFile"
         done
     IFS=$SAVEIFS
 }
@@ -138,6 +138,7 @@ if [ "$dryRun" = true ];
         read -r -p "Dry run complete, hit enter to review the results"
         less "/tmp/$userId.dryrun"
         read -r -p "Would you like to run the script live?: " liveRunChoice
+        rm "/tmp/$userId.dryrun"
         case $liveRunChoice in
             [yY])
                 echo -e "Doing it again but live"
