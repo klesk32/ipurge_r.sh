@@ -12,7 +12,7 @@ A way to recursively use ipurge on a user mailbox
 
 ## Usage
 
-The ipurge_r.sh script prompts for the UID of the user and the date up to whicthe mailbox should be cleaned. It then performs the cleanup operation, either idry run mode or live mode, based on user selection.
+The ipurge_r.sh script prompts for the UID of the user and the date up to which the mailbox should be cleaned. It then performs the cleanup operation, either in dry run mode or live mode, based on user selection.
 
 Once executed, the script performs the following steps:
 
