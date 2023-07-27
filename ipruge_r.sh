@@ -1,8 +1,42 @@
 #!/bin/bash
 
-version=0.1.0
+version=0.1.1
 
 showHelp=false
+
+# functions
+function dryRunOnMailbox () {
+    local daysSince="$1"
+    local userMailbox="$2"
+
+    SAVEIFS=$IFS
+    IFS=$(echo -en "\n\b")
+    cyrus ipurge -d "$daysSince" -f -n -v "$userMailbox"
+    for i in $(du -h | awk -F'\t' '{ print $2 }' | awk -F. '{ print $2 }')
+        do
+            i=${i/^/.}
+            cyrus ipurge -d "$daysSince" -f -n -v "$userMailbox""$i"
+        done
+    IFS=$SAVEIFS
+}
+
+function liveRunOnMailbox () {
+    local daysSince="$1"
+    local userMailbox="$2"
+
+    SAVEIFS=$IFS
+    IFS=$(echo -en "\n\b")
+    cyrus ipurge -d "$daysSince" -f -v "$userMailbox"
+
+    for i in $(du -h | awk -F'\t' '{ print $2 }' | awk -F. '{ print $2 }')
+        do
+            i=${i/^/.}
+            cyrus ipurge -d "$daysSince" -f -v "$userMailbox""$i"
+        done
+    IFS=$SAVEIFS
+}
+# functions end
+
 
 while getopts ":hv" opt; do
   case ${opt} in
@@ -103,28 +137,28 @@ esac
 
 # Actual cleanup portion of the script
 
-SAVEIFS=$IFS
-IFS=$(echo -en "\n\b")
-
 if [ "$dryRun" = true ];
     then
-        cyrus ipurge -d $daysSince -f -n -v "$userMailbox"
+        dryRunOnMailbox "$daysSince" "$userMailbox"
+        read -r -p "Dry run complete, would you like to run the script live?: " liveRunChoice
+        case $liveRunChoice in
+            [yY])
+                echo -e "Doing it again but live"
+                liveRunOnMailbox "$daysSince" "$userMailbox"
+                echo -e "Live run complete";;
+            [nN])
+                echo -e "Bailing out"
+                exit 1;;
+            *)
+                echo "Please choose Y or N"
+                ;;
+        esac
+    # For extra safety
+    elif [ "$dryRun" = false ];
+        then
+            liveRunOnMailbox "$daysSince" "$userMailbox"
+            echo "Live run complete"
     else
-        cyrus ipurge -d $daysSince -f -v "$userMailbox"
-    fi
-
-for i in $(du -h | awk -F'\t' '{ print $2 }' | awk -F. '{ print $2 }')
-    do
-    i=${i/^/.}
-    echo "Operating on $userMailbox$i"
-    if [ "$dryRun" = true ];
-        then    
-            cyrus ipurge -d $daysSince -f -n -v "$userMailbox""$i"
-        else
-            cyrus ipurge -d $daysSince -f -v "$userMailbox""$i"
-    fi
-
-    done
-IFS=$SAVEIFS
-
-echo -p "Done"
+        echo -e "Something went horribly wrong, bailing out"
+        exit 1
+fi
