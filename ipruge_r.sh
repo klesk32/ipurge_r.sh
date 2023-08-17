@@ -50,7 +50,7 @@ while getopts ":hv" opt; do
 done
 
 if [ "$showHelp" = true ]; then
-    echo "Usage: user-mailbox-cleanup [OPTIONS]"
+    echo "Usage: ipurge_r.sh [OPTIONS]"
     echo "Options:"
     echo "  -h    Show this help message and exit"
     echo "  -v    Show the version of the script"
