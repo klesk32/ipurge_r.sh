@@ -137,7 +137,7 @@ if [ "$dryRun" = true ];
         dryRunOnMailbox
         read -r -p "Dry run complete, hit enter to review the results"
         less "/tmp/$userId.dryrun"
-        read -r -p "Would you like to run the script live?: " liveRunChoice
+        read -r -p "Would you like to run the script live? [Y/N]: " liveRunChoice
         rm "/tmp/$userId.dryrun"
         case $liveRunChoice in
             [yY])
